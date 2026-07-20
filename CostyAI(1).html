@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BuildAI — AI Construction &amp; Renovation Platform</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- Bootstrap 5 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+<!-- AOS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.css">
+
+<style>
+/* ================= DESIGN TOKENS ================= */
+:root{
+  --navy:#0A1B33;
+  --navy-2:#0F2340;
+  --navy-3:#152c50;
+  --paper:#F5F3EE;
+  --paper-2:#EAE6DC;
+  --orange:#FF5A1F;
+  --orange-dim:#c94513;
+  --steel:#4C7FB0;
+  --concrete:#9A9C97;
+  --green:#2F9E5B;
+  --ink:#0E1116;
+  --line: rgba(255,255,255,.09);
+  --font-display:'Space Grotesk', sans-serif;
+  --font-body:'Inter', sans-serif;
+  --font-mono:'JetBrains Mono', monospace;
+  --bg: var(--navy);
+  --bg-2: var(--navy-2);
+  --surface: rgba(255,255,255,.045);
+  --surface-strong: rgba(255,255,255,.08);
+  --text: #EDEFF3;
+  --text-dim: #9AA6BC;
+  --border: rgba(255,255,255,.12);
+}
+[data-theme="light"]{
+  --bg: var(--paper);
+  --bg-2: var(--paper-2);
+  --surface: rgba(10,27,51,.04);
+  --surface-strong: rgba(10,27,51,.07);
+  --text: #10192B;
+  --text-dim: #566079;
+  --border: rgba(10,27,51,.12);
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:var(--font-body);
+  background:var(--bg);
+  color:var(--text);
+  transition:background .35s ease, color .35s ease;
+  overflow-x:hidden;
+}
+h1,h2,h3,h4,.display-font{font-family:var(--font-display); letter-spacing:-0.02em;}
+.mono{font-family:var(--font-mono); letter-spacing:.02em;}
+a{text-decoration:none;}
+.text-dim{color:var(--text-dim) !important;}
+.text-orange{color:var(--orange) !important;}
+.bg-surface{background:var(--surface);}
+
+/* Blueprint grid background */
+.blueprint-bg{
+  position:fixed; inset:0; z-index:-2; pointer-events:none;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size:44px 44px;
+  opacity:.55;
+}
+.blueprint-glow{
+  position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:
+    radial-gradient(60% 45% at 12% 0%, rgba(255,90,31,.14), transparent 60%),
+    radial-gradient(50% 40% at 100% 20%, rgba(76,127,176,.18), transparent 60%);
+}
+
+/* corner tick marks - signature motif */
+.tick-frame{position:relative;}
+.tick-frame::before,.tick-frame::after,
+.tick-frame .tick-br, .tick-frame .tick-bl{
+  content:""; position:absolute; width:14px; height:14px; z-index:2;
+}
+.tick-frame::before{top:-1px; left:-1px; border-top:2px solid var(--orange); border-left:2px solid var(--orange);}
+.tick-frame::after{top:-1px; right:-1px; border-top:2px solid var(--orange); border-right:2px solid var(--orange);}
+.tick-frame .tick-bl{bottom:-1px; left:-1px; border-bottom:2px solid var(--orange); border-left:2px solid var(--orange);}
+.tick-frame .tick-br{bottom:-1px; right:-1px; border-bottom:2px solid var(--orange); border-right:2px solid var(--orange);}
+
+/* Nav */
+.navbar-buildai{
+  background:color-mix(in srgb, var(--bg) 78%, transparent);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+  padding:.85rem 0;
+}
+.brand-mark{
+  width:38px; height:38px; border-radius:9px;
+  background:linear-gradient(135deg, var(--orange), var(--orange-dim));
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-family:var(--font-display); font-weight:700; font-size:1.05rem;
+  box-shadow:0 6px 18px rgba(255,90,31,.35);
+}
+.nav-link-ba{
+  color:var(--text-dim) !important; font-weight:500; font-size:.92rem;
+  padding:.5rem .85rem !important; border-radius:8px; transition:.2s;
+}
+.nav-link-ba:hover, .nav-link-ba.active{color:var(--text) !important; background:var(--surface);}
+.btn-orange{
+  background:var(--orange); border:none; color:#fff; font-weight:600;
+  padding:.6rem 1.3rem; border-radius:9px; transition:.2s;
+  box-shadow:0 8px 20px rgba(255,90,31,.28);
+}
+.btn-orange:hover{background:var(--orange-dim); color:#fff; transform:translateY(-1px);}
+.btn-outline-ba{
+  border:1px solid var(--border); color:var(--text); background:transparent;
+  padding:.6rem 1.3rem; border-radius:9px; font-weight:600; transition:.2s;
+}
+.btn-outline-ba:hover{background:var(--surface); color:var(--text);}
+.icon-btn{
+  width:40px; height:40px; border-radius:9px; border:1px solid var(--border);
+  background:var(--surface); display:flex; align-items:center; justify-content:center;
+  color:var(--text); transition:.2s;
+}
+.icon-btn:hover{background:var(--surface-strong);}
+
+/* Glass card */
+.glass{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  backdrop-filter:blur(10px);
+  transition:.25s ease;
+}
+.glass:hover{background:var(--surface-strong); transform:translateY(-3px); box-shadow:0 18px 40px rgba(0,0,0,.22);}
+.eyebrow{
+  font-family:var(--font-mono); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--orange); display:flex; align-items:center; gap:.5rem;
+}
+.eyebrow::before{content:""; width:22px; height:1px; background:var(--orange);}
+
+/* Pages / SPA views */
+.page{display:none;}
+.page.active{display:block; animation:fadein .45s ease;}
+@keyframes fadein{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
+
+/* Hero */
+.hero{padding:7.5rem 0 4rem;}
+.hero-img-wrap{position:relative; border-radius:20px; overflow:hidden;}
+.hero-img-wrap img{width:100%; height:100%; object-fit:cover; display:block; min-height:420px;}
+.hero-img-wrap::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg, transparent 40%, rgba(10,27,51,.75) 100%);}
+.measure-line{position:absolute; border-top:1px dashed rgba(255,255,255,.5);}
+
+/* Instrument panel (signature hero element) */
+.instrument-panel{
+  position:absolute; bottom:18px; left:18px; right:18px; z-index:3;
+  background:rgba(10,27,51,.72); backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.18); border-radius:14px; padding:1rem 1.1rem;
+  color:#fff;
+}
+.instrument-row{display:flex; justify-content:space-between; align-items:baseline; padding:.28rem 0; border-bottom:1px dashed rgba(255,255,255,.14);}
+.instrument-row:last-child{border-bottom:none;}
+.instrument-label{font-family:var(--font-mono); font-size:.72rem; color:rgba(255,255,255,.65); letter-spacing:.05em;}
+.instrument-value{font-family:var(--font-mono); font-weight:600; font-size:.95rem;}
+
+/* Stats counters */
+.stat-num{font-family:var(--font-display); font-size:2.6rem; font-weight:700; color:var(--text);}
+
+/* Feature card */
+.feat-icon{
+  width:52px; height:52px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg, rgba(255,90,31,.18), rgba(255,90,31,.05));
+  color:var(--orange); font-size:1.3rem; margin-bottom:1rem;
+}
+
+/* FAQ */
+.accordion-item{background:var(--surface); border:1px solid var(--border); border-radius:12px !important; overflow:hidden; margin-bottom:.7rem;}
+.accordion-button{background:transparent; color:var(--text); font-weight:600; font-family:var(--font-display);}
+.accordion-button:not(.collapsed){background:var(--surface-strong); color:var(--orange); box-shadow:none;}
+.accordion-button::after{filter: invert(var(--icon-invert, 0));}
+.accordion-body{color:var(--text-dim);}
+
+/* Section title */
+.section-pad{padding:5rem 0;}
+.sec-title{font-size:2.1rem; font-weight:700;}
+
+/* Sidebar layout for app pages */
+.app-shell{padding-top:6.2rem; min-height:100vh;}
+.sidebar{
+  border-right:1px solid var(--border); min-height:calc(100vh - 6.2rem); padding:1.5rem 1rem;
+  position:sticky; top:6.2rem;
+}
+.side-link{
+  display:flex; align-items:center; gap:.7rem; padding:.65rem .8rem; border-radius:9px;
+  color:var(--text-dim); font-weight:500; font-size:.9rem; margin-bottom:.2rem; cursor:pointer;
+}
+.side-link:hover{background:var(--surface); color:var(--text);}
+.side-link.active{background:rgba(255,90,31,.13); color:var(--orange);}
+.side-link i{font-size:1.05rem; width:20px; text-align:center;}
+
+/* Form controls */
+.form-control, .form-select{
+  background:var(--surface); border:1px solid var(--border); color:var(--text);
+  border-radius:9px; padding:.55rem .8rem; font-size:.92rem;
+}
+.form-control:focus, .form-select:focus{
+  background:var(--surface-strong); color:var(--text); border-color:var(--orange);
+  box-shadow:0 0 0 3px rgba(255,90,31,.15);
+}
+.form-label{font-size:.8rem; font-weight:600; color:var(--text-dim); margin-bottom:.3rem; font-family:var(--font-mono); letter-spacing:.03em;}
+.input-group-text{background:var(--surface); border:1px solid var(--border); color:var(--text-dim);}
+
+/* Result cards */
+.result-card{
+  background:var(--surface); border:1px solid var(--border); border-radius:13px; padding:1rem 1.1rem;
+  transition:.2s;
+}
+.result-card:hover{border-color:var(--orange);}
+.result-card .val{font-family:var(--font-mono); font-size:1.4rem; font-weight:600;}
+.result-card .lbl{font-size:.76rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.05em;}
+
+/* Product card */
+.product-card{background:var(--surface); border:1px solid var(--border); border-radius:15px; overflow:hidden; height:100%;}
+.product-card img{height:170px; width:100%; object-fit:cover;}
+.product-card .body{padding:1rem;}
+.fav-btn{
+  position:absolute; top:10px; right:10px; width:36px; height:36px; border-radius:50%;
+  background:rgba(10,27,51,.55); backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.2);
+  color:#fff; display:flex; align-items:center; justify-content:center; z-index:2; transition:.2s;
+}
+.fav-btn.active{color:var(--orange); border-color:var(--orange);}
+.badge-cat{background:rgba(255,90,31,.15); color:var(--orange); font-weight:600; font-size:.68rem; padding:.32rem .6rem; border-radius:20px;}
+
+/* store card */
+.store-cover{height:130px; object-fit:cover; width:100%;}
+.store-logo{width:52px; height:52px; border-radius:12px; object-fit:cover; border:2px solid var(--bg); margin-top:-30px; position:relative; z-index:2;}
+
+/* Chat */
+.chat-window{height:440px; overflow-y:auto; padding:1rem; background:var(--surface); border-radius:13px; border:1px solid var(--border);}
+.msg{max-width:78%; padding:.6rem .9rem; border-radius:12px; margin-bottom:.7rem; font-size:.9rem; line-height:1.45;}
+.msg.bot{background:var(--surface-strong); border:1px solid var(--border); border-bottom-left-radius:3px;}
+.msg.user{background:var(--orange); color:#fff; margin-left:auto; border-bottom-right-radius:3px;}
+.chip{
+  border:1px solid var(--border); background:var(--surface); border-radius:20px; padding:.4rem .85rem;
+  font-size:.82rem; color:var(--text-dim); cursor:pointer; transition:.2s;
+}
+.chip:hover{background:var(--surface-strong); color:var(--text); border-color:var(--orange);}
+
+/* Uploader */
+.dropzone{
+  border:2px dashed var(--border); border-radius:16px; padding:3rem 1.5rem; text-align:center;
+  cursor:pointer; transition:.2s;
+}
+.dropzone:hover{border-color:var(--orange); background:var(--surface);}
+.style-swatch{border-radius:12px; overflow:hidden; cursor:pointer; border:2px solid transparent; transition:.2s;}
+.style-swatch.active{border-color:var(--orange);}
+.style-swatch img{height:110px; width:100%; object-fit:cover;}
+
+/* Toast / notif */
+.notif-panel{position:fixed; top:80px; right:20px; width:320px; z-index:2000;}
+.notif-item{background:var(--bg-2); border:1px solid var(--border); border-radius:12px; padding:.8rem 1rem; margin-bottom:.6rem; box-shadow:0 10px 30px rgba(0,0,0,.3); animation:slidein .3s ease;}
+@keyframes slidein{from{opacity:0; transform:translateX(30px);} to{opacity:1; transform:translateX(0);}}
+
+/* FAB / back to top */
+.fab{position:fixed; bottom:28px; right:24px; z-index:1500; display:flex; flex-direction:column; gap:.7rem; align-items:flex-end;}
+.fab-btn{
+  width:52px; height:52px; border-radius:50%; background:var(--orange); color:#fff; border:none;
+  display:flex; align-items:center; justify-content:center; font-size:1.2rem; box-shadow:0 10px 26px rgba(255,90,31,.4);
+  transition:.2s;
+}
+.fab-btn:hover{transform:scale(1.07);}
+.fab-btn.secondary{background:var(--bg-2); border:1px solid var(--border); width:44px; height:44px; font-size:1rem; opacity:0; pointer-events:none;}
+.fab-btn.secondary.show{opacity:1; pointer-events:auto;}
+
+/* misc */
+.footer-ba{border-top:1px solid var(--border); padding:3.5rem 0 2rem; margin-top:2rem;}
+.rating i{color:#F5B301; font-size:.8rem;}
+.progress-thin{height:6px; border-radius:4px; background:var(--surface-strong);}
+.progress-thin .progress-bar{background:var(--orange);}
+::selection{background:var(--orange); color:#fff;}
+.skeleton{background:linear-gradient(90deg, var(--surface) 25%, var(--surface-strong) 37%, var(--surface) 63%); background-size:400% 100%; animation:sk 1.4s ease infinite;}
+@keyframes sk{0%{background-position:100% 50%;}100%{background-position:0 50%;}}
+@media (max-width:991px){.sidebar{position:static; min-height:auto;}}
+</style>
+</head>
+<body>
+
+<div class="blueprint-bg"></div>
+<div class="blueprint-glow"></div>
+
+<!-- ===================== NAVBAR ===================== -->
+<nav class="navbar navbar-expand-lg fixed-top navbar-buildai">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="#" onclick="nav('home');return false;">
+      <span class="brand-mark">B</span>
+      <span class="display-font fw-bold fs-5">Costy<span class="text-orange">AI</span></span>
+    </a>
+    <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <i class="bi bi-list fs-2" style="color:var(--text)"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav mx-auto gap-1 mt-3 mt-lg-0">
+        <li class="nav-item"><a class="nav-link nav-link-ba active" data-route="home" href="#" onclick="nav('home');return false;">Home</a></li>
+        <li class="nav-item"><a class="nav-link nav-link-ba" data-route="dashboard" href="#" onclick="nav('dashboard');return false;">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link nav-link-ba" data-route="calculator" href="#" onclick="nav('calculator');return false;">Calculator</a></li>
+        <li class="nav-item"><a class="nav-link nav-link-ba" data-route="renovation" href="#" onclick="nav('renovation');return false;">Renovation</a></li>
+        <li class="nav-item"><a class="nav-link nav-link-ba" data-route="assistant" href="#" onclick="nav('assistant');return false;">AI Assistant</a></li>
+        <li class="nav-item"><a class="nav-link nav-link-ba" data-route="marketplace" href="#" onclick="nav('marketplace');return false;">Marketplace</a></li>
+        <li class="nav-item"><a class="nav-link nav-link-ba" data-route="stores" href="#" onclick="nav('stores');return false;">Stores</a></li>
+      </ul>
+      <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+        <button class="icon-btn position-relative" onclick="toggleNotif()" title="Notifications">
+          <i class="bi bi-bell"></i>
+          <span id="notifDot" class="position-absolute translate-middle badge rounded-pill" style="top:6px;left:30px;background:var(--orange); width:8px; height:8px; padding:0;"></span>
+        </button>
+        <button class="icon-btn" onclick="toggleTheme()" title="Toggle theme"><i class="bi bi-moon-stars" id="themeIcon"></i></button>
+        <button class="btn btn-orange btn-sm" onclick="nav('calculator')">Start Calculating</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div id="notifPanel" class="notif-panel" style="display:none;"></div>
+
+<!-- ===================== HOME ===================== -->
+<div id="page-home" class="page active">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6" data-aos="fade-right">
+          <div class="eyebrow mb-3">AI-Powered Estimating</div>
+          <h1 class="display-4 fw-bold mb-3">Know the exact cost<br>before you lay <span class="text-orange">one brick.</span></h1>
+          <p class="text-dim fs-5 mb-4" style="max-width:520px;">BuildAI turns wall dimensions, finishes and openings into precise material lists, labor costs and a total budget — instantly, with AI recommendations along the way.</p>
+          <div class="d-flex gap-3 flex-wrap mb-4">
+            <button class="btn btn-orange btn-lg" onclick="nav('calculator')"><i class="bi bi-calculator me-2"></i>Run the Calculator</button>
+            <button class="btn btn-outline-ba btn-lg" onclick="nav('assistant')"><i class="bi bi-chat-dots me-2"></i>Ask the AI Assistant</button>
+          </div>
+          <div class="d-flex gap-4 flex-wrap">
+            <div><div class="stat-num" data-count="482">0</div><div class="text-dim small">Projects estimated</div></div>
+            <div><div class="stat-num" data-count="96">0</div><div class="text-dim small">Partner stores</div></div>
+            <div><div class="stat-num" data-count="14">0</div><div class="text-dim small">Material categories</div></div>
+          </div>
+        </div>
+        <div class="col-lg-6" data-aos="fade-left">
+          <div class="hero-img-wrap tick-frame" style="height:520px;">
+            <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=1200&auto=format&fit=crop" alt="Construction site">
+            <span class="tick-bl"></span><span class="tick-br"></span>
+            <div class="instrument-panel">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="mono text-white-50" style="font-size:.7rem;">WALL SPEC · A-01</span>
+                <span class="mono" style="font-size:.7rem; color:var(--orange);">● LIVE ESTIMATE</span>
+              </div>
+              <div class="instrument-row"><span class="instrument-label">AREA</span><span class="instrument-value">28.5 m²</span></div>
+              <div class="instrument-row"><span class="instrument-label">BRICKS REQUIRED</span><span class="instrument-value">3,120 pcs</span></div>
+              <div class="instrument-row"><span class="instrument-label">CEMENT</span><span class="instrument-value">312 kg</span></div>
+              <div class="instrument-row"><span class="instrument-label">GRAND TOTAL</span><span class="instrument-value" style="color:var(--orange);">$1,842.00</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS STRIP -->
+  <section class="py-4" style="border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+    <div class="container">
+      <div class="row g-4 text-center">
+        <div class="col-6 col-md-3" data-aos="fade-up"><div class="stat-num" data-count="99">0</div><div class="text-dim small mono">ACCURACY RATE %</div></div>
+        <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="50"><div class="stat-num" data-count="12">0</div><div class="text-dim small mono">CALC. TYPES</div></div>
+        <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="100"><div class="stat-num" data-count="24">0</div><div class="text-dim small mono">SECONDS AVG.</div></div>
+        <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="150"><div class="stat-num" data-count="5">0</div><div class="text-dim small mono">DESIGN STYLES</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section-pad">
+    <div class="container">
+      <div class="text-center mb-5" data-aos="fade-up">
+        <div class="eyebrow justify-content-center mb-2">What's inside</div>
+        <h2 class="sec-title">One platform, the whole build</h2>
+        <p class="text-dim">From foundation math to finish selection — every tool a build needs, in one place.</p>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-4" data-aos="fade-up">
+          <div class="glass p-4 h-100"><div class="feat-icon"><i class="bi bi-bricks"></i></div>
+          <h5 class="fw-bold mb-2">Construction Calculator</h5>
+          <p class="text-dim small mb-0">Bricks, cement, sand, mortar, putty, primer and paint — computed from real wall geometry, openings and waste %.</p></div>
+        </div>
+        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="50">
+          <div class="glass p-4 h-100"><div class="feat-icon"><i class="bi bi-palette"></i></div>
+          <h5 class="fw-bold mb-2">Renovation Estimator</h5>
+          <p class="text-dim small mb-0">Painting, tiling, laminate, wallpaper, gypsum ceilings and lighting — materials and labor in one pass.</p></div>
+        </div>
+        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="glass p-4 h-100"><div class="feat-icon"><i class="bi bi-chat-dots"></i></div>
+          <h5 class="fw-bold mb-2">AI Construction Assistant</h5>
+          <p class="text-dim small mb-0">Ask about brick types, paint durability or how to cut costs — answered instantly, ready to plug into a real model.</p></div>
+        </div>
+        <div class="col-md-6 col-lg-4" data-aos="fade-up">
+          <div class="glass p-4 h-100"><div class="feat-icon"><i class="bi bi-camera"></i></div>
+          <h5 class="fw-bold mb-2">AI Wall Analyzer</h5>
+          <p class="text-dim small mb-0">Upload a photo of a wall and get a simulated defect report — cracks, damp, mold — with repair materials and cost.</p></div>
+        </div>
+        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="50">
+          <div class="glass p-4 h-100"><div class="feat-icon"><i class="bi bi-shop"></i></div>
+          <h5 class="fw-bold mb-2">Material Marketplace</h5>
+          <p class="text-dim small mb-0">Compare bricks, cement, tiles and fittings across brands, prices and ratings before you buy.</p></div>
+        </div>
+        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="glass p-4 h-100"><div class="feat-icon"><i class="bi bi-geo-alt"></i></div>
+          <h5 class="fw-bold mb-2">Store Directory</h5>
+          <p class="text-dim small mb-0">Find construction stores in Tashkent with hours, delivery info and a one-tap route.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="section-pad" style="background:var(--surface);">
+    <div class="container">
+      <div class="text-center mb-5" data-aos="fade-up">
+        <div class="eyebrow justify-content-center mb-2">Field notes</div>
+        <h2 class="sec-title">Builders trust the numbers</h2>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-4" data-aos="fade-up">
+          <div class="glass p-4 h-100">
+            <div class="rating mb-3"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+            <p class="text-dim">"Estimated a full renovation budget in the time it used to take me to find a tape measure. The material breakdown matched our actual receipts within 4%."</p>
+            <div class="fw-bold mt-3">Dilshod K.</div><div class="text-dim small">General Contractor, Tashkent</div>
+          </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="50">
+          <div class="glass p-4 h-100">
+            <div class="rating mb-3"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i></div>
+            <p class="text-dim">"The wall analyzer flagged rising damp before we started plastering — saved us a redo two weeks in."</p>
+            <div class="fw-bold mt-3">Nigora A.</div><div class="text-dim small">Interior Designer</div>
+          </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="glass p-4 h-100">
+            <div class="rating mb-3"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+            <p class="text-dim">"Cost optimization suggested a cheaper local brick with the same load rating. Cut the material bill by 11%."</p>
+            <div class="fw-bold mt-3">Bekzod T.</div><div class="text-dim small">Homeowner, self-build</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section-pad">
+    <div class="container">
+      <div class="row g-5">
+        <div class="col-lg-4" data-aos="fade-right">
+          <div class="eyebrow mb-2">Questions</div>
+          <h2 class="sec-title mb-3">Frequently asked</h2>
+          <p class="text-dim">Can't find what you need? The AI assistant answers construction-specific questions in real time.</p>
+          <button class="btn btn-outline-ba mt-2" onclick="nav('assistant')">Ask the assistant</button>
+        </div>
+        <div class="col-lg-8" data-aos="fade-left">
+          <div class="accordion" id="faqAcc">
+            <div class="accordion-item">
+              <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#f1">How accurate are the material quantities?</button></h2>
+              <div id="f1" class="accordion-collapse collapse" data-bs-parent="#faqAcc"><div class="accordion-body">Calculations use standard construction formulas (net wall area after openings, brick-course counts, mortar ratios). Accuracy depends on the input precision and typically lands within a small waste-margin buffer, which you control directly.</div></div>
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#f2">Can I export or print my estimate?</button></h2>
+              <div id="f2" class="accordion-collapse collapse" data-bs-parent="#faqAcc"><div class="accordion-body">Yes — every calculator has an Export Report action that opens a print-ready summary, and a Share action to copy a text summary of the results.</div></div>
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#f3">Is the AI assistant connected to a real model?</button></h2>
+              <div id="f3" class="accordion-collapse collapse" data-bs-parent="#faqAcc"><div class="accordion-body">In this build it runs on a local rules engine so it works fully offline. It's structured as a single <code>askAssistant()</code> function, built to be swapped for a real API call with no UI changes.</div></div>
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#f4">Does the wall analyzer really analyze my photo?</button></h2>
+              <div id="f4" class="accordion-collapse collapse" data-bs-parent="#faqAcc"><div class="accordion-body">This preview simulates the analysis output so you can see the intended experience end-to-end. It's wired to a single upload handler ready for a real vision model.</div></div>
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#f5">Are the stores and prices real?</button></h2>
+              <div id="f5" class="accordion-collapse collapse" data-bs-parent="#faqAcc"><div class="accordion-body">Store names and neighborhoods are drawn from real Tashkent construction retailers; contact details are illustrative and should be verified before visiting. Marketplace prices are sample data for demonstration.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT / CTA -->
+  <section class="section-pad">
+    <div class="container">
+      <div class="glass tick-frame p-5 text-center" data-aos="zoom-in" style="background:linear-gradient(135deg, rgba(255,90,31,.12), rgba(76,127,176,.08));">
+        <span class="tick-bl"></span><span class="tick-br"></span>
+        <h2 class="sec-title mb-2">Ready to price your build?</h2>
+        <p class="text-dim mb-4">No sign-up required for this preview — jump straight into the calculator.</p>
+        <button class="btn btn-orange btn-lg" onclick="nav('calculator')">Open the Calculator <i class="bi bi-arrow-right ms-1"></i></button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===================== APP SHELL (Dashboard, Calculators, AI, Marketplace, Stores) ===================== -->
+<div id="app-shell" class="app-shell" style="display:none;">
+  <div class="container-fluid px-3 px-lg-4">
+    <div class="row">
+      <div class="col-lg-2 d-none d-lg-block sidebar">
+        <div class="side-link" data-route="dashboard" onclick="nav('dashboard')"><i class="bi bi-grid-1x2"></i> Dashboard</div>
+        <div class="side-link" data-route="calculator" onclick="nav('calculator')"><i class="bi bi-bricks"></i> Construction</div>
+        <div class="side-link" data-route="renovation" onclick="nav('renovation')"><i class="bi bi-palette"></i> Renovation</div>
+        <div class="side-link" data-route="assistant" onclick="nav('assistant')"><i class="bi bi-chat-dots"></i> AI Assistant</div>
+        <div class="side-link" data-route="analyzer" onclick="nav('analyzer')"><i class="bi bi-camera"></i> Wall Analyzer</div>
+        <hr style="border-color:var(--border)">
+        <div class="side-link" data-route="marketplace" onclick="nav('marketplace')"><i class="bi bi-shop"></i> Marketplace</div>
+        <div class="side-link" data-route="stores" onclick="nav('stores')"><i class="bi bi-geo-alt"></i> Stores</div>
+        <div class="side-link" data-route="compare" onclick="nav('compare')"><i class="bi bi-bar-chart-steps"></i> Compare</div>
+        <div class="side-link" data-route="optimize" onclick="nav('optimize')"><i class="bi bi-piggy-bank"></i> Cost Optimizer</div>
+        <div class="side-link" data-route="reports" onclick="nav('reports')"><i class="bi bi-file-earmark-bar-graph"></i> Reports</div>
+      </div>
+
+      <div class="col-lg-10">
+
+        <!-- ================= DASHBOARD ================= -->
+        <div id="page-dashboard" class="page py-4">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+              <div class="eyebrow mb-1">Overview</div>
+              <h3 class="fw-bold mb-0">Welcome back, Builder</h3>
+            </div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-outline-ba" onclick="nav('calculator')"><i class="bi bi-plus-lg me-1"></i>New calculation</button>
+              <button class="btn btn-orange" onclick="nav('reports')"><i class="bi bi-file-earmark-text me-1"></i>View report</button>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-6 col-lg-3"><div class="result-card"><div class="lbl">Saved projects</div><div class="val" id="kpiProjects">3</div></div></div>
+            <div class="col-6 col-lg-3"><div class="result-card"><div class="lbl">Est. budget (total)</div><div class="val" id="kpiBudget">$0</div></div></div>
+            <div class="col-6 col-lg-3"><div class="result-card"><div class="lbl">Materials tracked</div><div class="val">14</div></div></div>
+            <div class="col-6 col-lg-3"><div class="result-card"><div class="lbl">Favorites</div><div class="val" id="kpiFavs">0</div></div></div>
+          </div>
+
+          <div class="row g-4 mb-4">
+            <div class="col-lg-7">
+              <div class="glass p-4 h-100">
+                <div class="d-flex justify-content-between mb-3"><h6 class="fw-bold mb-0">Budget distribution</h6><span class="text-dim small mono">CURRENT PROJECT</span></div>
+                <canvas id="chartBudget" height="200"></canvas>
+              </div>
+            </div>
+            <div class="col-lg-5">
+              <div class="glass p-4 h-100">
+                <div class="d-flex justify-content-between mb-3"><h6 class="fw-bold mb-0">Material usage</h6><span class="text-dim small mono">BY WEIGHT</span></div>
+                <canvas id="chartMaterial" height="200"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-4">
+            <div class="col-lg-8">
+              <div class="glass p-4">
+                <h6 class="fw-bold mb-3">Saved projects</h6>
+                <div class="table-responsive">
+                <table class="table table-borderless align-middle mb-0" style="color:var(--text)">
+                  <thead><tr class="text-dim small mono"><th>PROJECT</th><th>TYPE</th><th>AREA</th><th>BUDGET</th><th>STATUS</th></tr></thead>
+                  <tbody id="projectsTable"></tbody>
+                </table>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="glass p-4">
+                <h6 class="fw-bold mb-3">Quick shortcuts</h6>
+                <div class="d-grid gap-2">
+                  <button class="btn btn-outline-ba text-start" onclick="nav('calculator')"><i class="bi bi-bricks me-2"></i>Wall calculator</button>
+                  <button class="btn btn-outline-ba text-start" onclick="nav('renovation')"><i class="bi bi-palette me-2"></i>Renovation estimator</button>
+                  <button class="btn btn-outline-ba text-start" onclick="nav('analyzer')"><i class="bi bi-camera me-2"></i>Analyze a wall photo</button>
+                  <button class="btn btn-outline-ba text-start" onclick="nav('optimize')"><i class="bi bi-piggy-bank me-2"></i>Find savings</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= CONSTRUCTION CALCULATOR ================= -->
+        <div id="page-calculator" class="page py-4">
+          <div class="mb-4"><div class="eyebrow mb-1">Construction</div><h3 class="fw-bold">Wall calculator</h3><p class="text-dim">Enter wall geometry and material prices — results update live.</p></div>
+
+          <div class="row g-4">
+            <div class="col-lg-5">
+              <div class="glass p-4">
+                <h6 class="fw-bold mb-3 mono" style="font-size:.85rem;"><i class="bi bi-rulers me-1"></i> WALL GEOMETRY</h6>
+                <div class="row g-3">
+                  <div class="col-6"><label class="form-label">Width (m)</label><input type="number" class="form-control calc-input" id="c_width" value="6"></div>
+                  <div class="col-6"><label class="form-label">Height (m)</label><input type="number" class="form-control calc-input" id="c_height" value="3"></div>
+                  <div class="col-6"><label class="form-label">Thickness (m)</label><input type="number" step="0.01" class="form-control calc-input" id="c_thick" value="0.25"></div>
+                  <div class="col-6"><label class="form-label">Waste (%)</label><input type="number" class="form-control calc-input" id="c_waste" value="5"></div>
+                  <div class="col-6"><label class="form-label">Window area (m²)</label><input type="number" class="form-control calc-input" id="c_win" value="3"></div>
+                  <div class="col-6"><label class="form-label">Door area (m²)</label><input type="number" class="form-control calc-input" id="c_door" value="1.8"></div>
+                </div>
+
+                <h6 class="fw-bold mb-3 mt-4 mono" style="font-size:.85rem;"><i class="bi bi-bricks me-1"></i> BRICK</h6>
+                <div class="row g-3">
+                  <div class="col-6"><label class="form-label">Brick type</label>
+                    <select class="form-select calc-input" id="c_bricktype">
+                      <option value="0.25|0.12|0.065" selected>Standard clay (250×120×65mm)</option>
+                      <option value="0.29|0.14|0.09">Aerated block (290×140×90mm)</option>
+                      <option value="0.39|0.19|0.19">Concrete block (390×190×190mm)</option>
+                    </select>
+                  </div>
+                  <div class="col-6"><label class="form-label">Price / brick ($)</label><input type="number" step="0.01" class="form-control calc-input" id="c_brickprice" value="0.18"></div>
+                </div>
+
+                <h6 class="fw-bold mb-3 mt-4 mono" style="font-size:.85rem;"><i class="bi bi-droplet me-1"></i> MORTAR &amp; FINISH ($ / unit)</h6>
+                <div class="row g-3">
+                  <div class="col-6"><label class="form-label">Cement ($/kg)</label><input type="number" step="0.01" class="form-control calc-input" id="c_cement" value="0.12"></div>
+                  <div class="col-6"><label class="form-label">Sand ($/kg)</label><input type="number" step="0.01" class="form-control calc-input" id="c_sand" value="0.03"></div>
+                  <div class="col-6"><label class="form-label">Putty ($/kg)</label><input type="number" step="0.01" class="form-control calc-input" id="c_putty" value="0.35"></div>
+                  <div class="col-6"><label class="form-label">Primer ($/L)</label><input type="number" step="0.01" class="form-control calc-input" id="c_primer" value="1.6"></div>
+                  <div class="col-6"><label class="form-label">Paint ($/L)</label><input type="number" step="0.01" class="form-control calc-input" id="c_paint" value="3.2"></div>
+                  <div class="col-6"><label class="form-label">Water ratio (L/kg cement)</label><input type="number" step="0.01" class="form-control calc-input" id="c_waterratio" value="0.5"></div>
+                </div>
+
+                <h6 class="fw-bold mb-3 mt-4 mono" style="font-size:.85rem;"><i class="bi bi-person-workspace me-1"></i> LABOR</h6>
+                <div class="row g-3">
+                  <div class="col-12"><label class="form-label">Labor cost ($/m²)</label><input type="number" step="0.01" class="form-control calc-input" id="c_labor" value="6.5"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-7">
+              <div class="row g-3 mb-3">
+                <div class="col-6 col-md-3"><div class="result-card"><div class="lbl">Wall area</div><div class="val" id="r_area">—</div></div></div>
+                <div class="col-6 col-md-3"><div class="result-card"><div class="lbl">Wall volume</div><div class="val" id="r_volume">—</div></div></div>
+                <div class="col-6 col-md-3"><div class="result-card"><div class="lbl">Bricks</div><div class="val" id="r_bricks">—</div></div></div>
+                <div class="col-6 col-md-3"><div class="result-card"><div class="lbl">Cement</div><div class="val" id="r_cement">—</div></div></div>
+                <div class="col-6 col-md-3"><div class="result-card"><div class="lbl">Sand</div><div class="val" id="r_sand">—</div></div></div>
+                <div class="col-6 col-md-3"><div class="result-card"><div class="lbl">Water</div><div class="val" id="r_water">—</div></div></div>
+                <div class="col-6 col-md-3"><div class="result-card"><div class="lbl">Mortar vol.</div><div class="val" id="r_mortar">—</div></div></div>
+                <div class="col-6 col-md-3"><div class="result-card"><div class="lbl">Putty</div><div class="val" id="r_putty">—</div></div></div>
+                <div class="col-6 col-md-3"><div class="result-card"><div class="lbl">Primer</div><div class="val" id="r_primer">—</div></div></div>
+                <div class="col-6 col-md-3"><div class="result-card"><div class="lbl">Paint</div><div class="val" id="r_paint">—</div></div></div>
+                <div class="col-6 col-md-3"><div class="result-card"><div class="lbl">Labor cost</div><div class="val" id="r_labor">—</div></div></div>
+                <div class="col-6 col-md-3"><div class="result-card"><div class="lbl">Waste cost</div><div class="val" id="r_wastecost">—</div></div></div>
+              </div>
+
+              <div class="glass p-4 mb-3">
+                <canvas id="chartCalcBreakdown" height="140"></canvas>
+              </div>
+
+              <div class="glass p-4 d-flex justify-content-between align-items-center flex-wrap gap-3" style="background:linear-gradient(135deg, rgba(255,90,31,.14), transparent);">
+                <div>
+                  <div class="lbl">Grand total</div>
+                  <div class="display-font fw-bold" style="font-size:2.2rem;" id="r_grandtotal">$0.00</div>
+                </div>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-outline-ba" onclick="saveProject('Construction')"><i class="bi bi-bookmark-plus me-1"></i>Save</button>
+                  <button class="btn btn-outline-ba" onclick="shareReport('construction')"><i class="bi bi-share me-1"></i>Share</button>
+                  <button class="btn btn-orange" onclick="printReport('construction')"><i class="bi bi-printer me-1"></i>Export</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= RENOVATION CALCULATOR ================= -->
+        <div id="page-renovation" class="page py-4">
+          <div class="mb-4"><div class="eyebrow mb-1">Renovation</div><h3 class="fw-bold">Renovation estimator</h3><p class="text-dim">Pick a category, enter your space, get materials and labor instantly.</p></div>
+
+          <ul class="nav nav-pills gap-2 mb-4" id="renoTabs">
+            <li class="nav-item"><button class="chip active" data-reno="paint">Painting</button></li>
+            <li class="nav-item"><button class="chip" data-reno="wallpaper">Wallpaper</button></li>
+            <li class="nav-item"><button class="chip" data-reno="tiles">Tiles</button></li>
+            <li class="nav-item"><button class="chip" data-reno="laminate">Laminate flooring</button></li>
+            <li class="nav-item"><button class="chip" data-reno="ceiling">Gypsum ceiling</button></li>
+            <li class="nav-item"><button class="chip" data-reno="lighting">Lighting</button></li>
+          </ul>
+
+          <div class="row g-4">
+            <div class="col-lg-5">
+              <div class="glass p-4">
+                <div class="row g-3">
+                  <div class="col-6"><label class="form-label">Room width (m)</label><input type="number" class="form-control reno-input" id="rn_width" value="4"></div>
+                  <div class="col-6"><label class="form-label">Room length (m)</label><input type="number" class="form-control reno-input" id="rn_length" value="5"></div>
+                  <div class="col-6" id="rn_heightWrap"><label class="form-label">Wall height (m)</label><input type="number" class="form-control reno-input" id="rn_height" value="2.7"></div>
+                  <div class="col-6"><label class="form-label">Coats / layers</label><input type="number" class="form-control reno-input" id="rn_coats" value="2"></div>
+                  <div class="col-6"><label class="form-label" id="rn_priceLabel">Material price ($/m²)</label><input type="number" step="0.01" class="form-control reno-input" id="rn_price" value="4.2"></div>
+                  <div class="col-6"><label class="form-label">Labor ($/m²)</label><input type="number" step="0.01" class="form-control reno-input" id="rn_labor" value="3.5"></div>
+                  <div class="col-6"><label class="form-label">Waste (%)</label><input type="number" class="form-control reno-input" id="rn_waste" value="8"></div>
+                  <div class="col-6" id="rn_extraWrap"><label class="form-label" id="rn_extraLabel">Fixture count</label><input type="number" class="form-control reno-input" id="rn_extra" value="6"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-7">
+              <div class="row g-3 mb-3">
+                <div class="col-6 col-md-4"><div class="result-card"><div class="lbl">Coverage area</div><div class="val" id="rn_area">—</div></div></div>
+                <div class="col-6 col-md-4"><div class="result-card"><div class="lbl">Material needed</div><div class="val" id="rn_material">—</div></div></div>
+                <div class="col-6 col-md-4"><div class="result-card"><div class="lbl">Material cost</div><div class="val" id="rn_matcost">—</div></div></div>
+                <div class="col-6 col-md-4"><div class="result-card"><div class="lbl">Labor cost</div><div class="val" id="rn_laborcost">—</div></div></div>
+                <div class="col-6 col-md-4"><div class="result-card"><div class="lbl">Waste cost</div><div class="val" id="rn_wastecost">—</div></div></div>
+                <div class="col-6 col-md-4"><div class="result-card"><div class="lbl">Extras</div><div class="val" id="rn_extracost">—</div></div></div>
+              </div>
+              <div class="glass p-4 d-flex justify-content-between align-items-center flex-wrap gap-3" style="background:linear-gradient(135deg, rgba(76,127,176,.16), transparent);">
+                <div><div class="lbl">Renovation total</div><div class="display-font fw-bold" style="font-size:2.2rem;" id="rn_total">$0.00</div></div>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-outline-ba" onclick="saveProject('Renovation')"><i class="bi bi-bookmark-plus me-1"></i>Save</button>
+                  <button class="btn btn-orange" onclick="printReport('renovation')"><i class="bi bi-printer me-1"></i>Export</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= AI ASSISTANT ================= -->
+        <div id="page-assistant" class="page py-4">
+          <div class="mb-4"><div class="eyebrow mb-1">AI Assistant</div><h3 class="fw-bold">Ask BuildAI</h3><p class="text-dim">Answers run on a local rules engine in this preview — built to be swapped for a live model via one function.</p></div>
+          <div class="row g-4">
+            <div class="col-lg-8">
+              <div class="chat-window" id="chatWindow">
+                <div class="msg bot">Hi, I'm the BuildAI assistant. Ask me about brick types, paint choices, cost-cutting, or material durability.</div>
+              </div>
+              <div class="d-flex gap-2 mt-3">
+                <input type="text" class="form-control" id="chatInput" placeholder="Ask a construction question…" onkeydown="if(event.key==='Enter')sendChat();">
+                <button class="btn btn-orange px-4" onclick="sendChat()"><i class="bi bi-send"></i></button>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="glass p-4">
+                <h6 class="fw-bold mb-3">Try asking</h6>
+                <div class="d-flex flex-column gap-2">
+                  <div class="chip" onclick="quickAsk('Which brick is better?')">Which brick is better?</div>
+                  <div class="chip" onclick="quickAsk('Which paint should I choose?')">Which paint should I choose?</div>
+                  <div class="chip" onclick="quickAsk('How can I reduce costs?')">How can I reduce costs?</div>
+                  <div class="chip" onclick="quickAsk('Which materials last longer?')">Which materials last longer?</div>
+                  <div class="chip" onclick="quickAsk('What is the best wall thickness?')">Best wall thickness?</div>
+                  <div class="chip" onclick="quickAsk('Which cement should I use?')">Which cement should I use?</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= WALL ANALYZER ================= -->
+        <div id="page-analyzer" class="page py-4">
+          <div class="mb-4"><div class="eyebrow mb-1">AI Wall Analyzer</div><h3 class="fw-bold">Upload a wall photo</h3><p class="text-dim">This preview simulates the analysis so you can see the full flow before a real vision model is connected.</p></div>
+          <div class="row g-4">
+            <div class="col-lg-5">
+              <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+                <i class="bi bi-cloud-arrow-up fs-1 text-dim mb-2 d-block"></i>
+                <div class="fw-bold">Click to upload a wall photo</div>
+                <div class="text-dim small">JPG or PNG, up to 10MB</div>
+                <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleUpload(event)">
+              </div>
+              <div id="preview" class="mt-3"></div>
+            </div>
+            <div class="col-lg-7">
+              <div id="analyzerResults" class="text-dim">Upload a photo to see simulated defect detection, repair recommendations and style ideas here.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= MARKETPLACE ================= -->
+        <div id="page-marketplace" class="page py-4">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div><div class="eyebrow mb-1">Marketplace</div><h3 class="fw-bold mb-0">Material marketplace</h3></div>
+            <div class="d-flex gap-2">
+              <div class="input-group" style="width:240px;">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control" id="marketSearch" placeholder="Search materials…" oninput="renderMarketplace()">
+              </div>
+              <select class="form-select" style="width:170px;" id="marketFilter" onchange="renderMarketplace()">
+                <option value="all">All categories</option>
+              </select>
+            </div>
+          </div>
+          <div class="row g-4" id="marketGrid"></div>
+        </div>
+
+        <!-- ================= STORES ================= -->
+        <div id="page-stores" class="page py-4">
+          <div class="mb-4"><div class="eyebrow mb-1">Directory</div><h3 class="fw-bold">Construction stores — Tashkent</h3><p class="text-dim small">Names and neighborhoods reflect real Tashkent retailers; hours, phone numbers and ratings shown here are illustrative — confirm details before visiting.</p></div>
+          <div class="row g-4" id="storeGrid"></div>
+        </div>
+
+        <!-- ================= COMPARE ================= -->
+        <div id="page-compare" class="page py-4">
+          <div class="mb-4"><div class="eyebrow mb-1">Comparison</div><h3 class="fw-bold">Compare materials</h3><p class="text-dim">Add items from the marketplace with the compare button. Comparing price, quality, durability, warranty, rating, popularity and cost efficiency.</p></div>
+          <div id="compareEmpty" class="glass p-5 text-center text-dim">
+            <i class="bi bi-bar-chart-steps fs-1 d-block mb-2"></i>No items yet — go to the <a href="#" onclick="nav('marketplace');return false;" class="text-orange">marketplace</a> and tap compare on a couple of products.
+          </div>
+          <div class="table-responsive" id="compareTableWrap" style="display:none;">
+            <table class="table align-middle" style="color:var(--text)">
+              <thead><tr class="text-dim small mono"><th>PRODUCT</th><th>PRICE</th><th>QUALITY</th><th>DURABILITY</th><th>WARRANTY</th><th>RATING</th><th>POPULARITY</th><th>COST EFFICIENCY</th><th></th></tr></thead>
+              <tbody id="compareTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ================= COST OPTIMIZER ================= -->
+        <div id="page-optimize" class="page py-4">
+          <div class="mb-4"><div class="eyebrow mb-1">Cost Optimization</div><h3 class="fw-bold">Where you can save</h3><p class="text-dim">AI-style suggestions based on your last calculator run.</p></div>
+          <div class="row g-4" id="optimizeGrid"></div>
+        </div>
+
+        <!-- ================= REPORTS ================= -->
+        <div id="page-reports" class="page py-4">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div><div class="eyebrow mb-1">Reports</div><h3 class="fw-bold mb-0">Project report</h3></div>
+            <button class="btn btn-orange" onclick="window.print()"><i class="bi bi-printer me-1"></i>Print / Export PDF</button>
+          </div>
+          <div class="row g-4">
+            <div class="col-lg-6"><div class="glass p-4"><h6 class="fw-bold mb-3">Cost breakdown</h6><canvas id="chartReportCost" height="220"></canvas></div></div>
+            <div class="col-lg-6"><div class="glass p-4"><h6 class="fw-bold mb-3">Price trend (illustrative)</h6><canvas id="chartReportTrend" height="220"></canvas></div></div>
+            <div class="col-12"><div class="glass p-4"><h6 class="fw-bold mb-3">Summary</h6><div id="reportSummary" class="text-dim">Run the construction calculator to populate this report.</div></div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER (home only) -->
+<footer class="footer-ba" id="siteFooter">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="d-flex align-items-center gap-2 mb-3"><span class="brand-mark">B</span><span class="display-font fw-bold fs-5">Build<span class="text-orange">AI</span></span></div>
+        <p class="text-dim small">AI-assisted construction and renovation estimating — from wall geometry to a finished budget.</p>
+      </div>
+      <div class="col-6 col-lg-2">
+        <div class="fw-bold mb-2">Product</div>
+        <div class="d-flex flex-column gap-2 text-dim small">
+          <a href="#" class="text-dim" onclick="nav('calculator');return false;">Calculator</a>
+          <a href="#" class="text-dim" onclick="nav('renovation');return false;">Renovation</a>
+          <a href="#" class="text-dim" onclick="nav('marketplace');return false;">Marketplace</a>
+        </div>
+      </div>
+      <div class="col-6 col-lg-2">
+        <div class="fw-bold mb-2">Company</div>
+        <div class="d-flex flex-column gap-2 text-dim small">
+          <a href="#" class="text-dim">About</a>
+          <a href="#" class="text-dim">Careers</a>
+          <a href="#" class="text-dim">Contact</a>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="fw-bold mb-2">Get in touch</div>
+        <div class="d-flex gap-2">
+          <input type="text" class="form-control" placeholder="Your email">
+          <button class="btn btn-orange">Send</button>
+        </div>
+      </div>
+    </div>
+    <hr class="mt-4" style="border-color:var(--border)">
+    <div class="d-flex justify-content-between flex-wrap gap-2 text-dim small">
+      <span>© 2026 BuildAI. All rights reserved.</span>
+      <span>Built as a product preview.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- FAB -->
+<div class="fab">
+  <button class="fab-btn secondary" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="bi bi-arrow-up"></i></button>
+  <button class="fab-btn" onclick="nav('assistant')" title="Ask AI"><i class="bi bi-chat-dots"></i></button>
+</div>
+
+<!-- ===================== SCRIPTS ===================== -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+
+<script>
+/* =========================================================================
+   BuildAI — client logic.
+   Calculation functions below are written as small, pure functions with
+   simple math only (area, volume, unit counts, cost sums) — mirroring what
+   would live in a PyScript module if this were wired to a Python backend.
+   Everything else (routing, DOM, charts, storage, chat) is JS as specified.
+   ========================================================================= */
+
+/* ---------- THEME ---------- */
+function toggleTheme(){
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  document.getElementById('themeIcon').className = next === 'dark' ? 'bi bi-moon-stars' : 'bi bi-sun';
+  localStorage.setItem('ba_theme', next);
+  refreshCharts();
+}
+(function initTheme(){
+  const saved = localStorage.getItem('ba_theme');
+  if(saved){ document.documentElement.setAttribute('data-theme', saved); }
+  document.addEventListener('DOMContentLoaded', ()=>{
+    document.getElementById('themeIcon').className = document.documentElement.getAttribute('data-theme')==='light' ? 'bi bi-sun':'bi bi-moon-stars';
+  });
+})();
+
+/* ---------- ROUTER ---------- */
+const APP_ROUTES = ['dashboard','calculator','renovation','assistant','analyzer','marketplace','stores','compare','optimize','reports'];
+function nav(route){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-link-ba').forEach(l=>l.classList.remove('active'));
+  document.querySelectorAll('.side-link').forEach(l=>l.classList.remove('active'));
+
+  if(route === 'home'){
+    document.getElementById('page-home').classList.add('active');
+    document.getElementById('app-shell').style.display = 'none';
+    document.getElementById('siteFooter').style.display = 'block';
+    document.querySelector('[data-route="home"]').classList.add('active');
+  } else {
+    document.getElementById('app-shell').style.display = 'block';
+    document.getElementById('siteFooter').style.display = 'none';
+    const target = document.getElementById('page-'+route);
+    if(target) target.classList.add('active');
+    const navLink = document.querySelector('.nav-link-ba[data-route="'+route+'"]');
+    if(navLink) navLink.classList.add('active');
+    const sideLink = document.querySelector('.side-link[data-route="'+route+'"]');
+    if(sideLink) sideLink.classList.add('active');
+    if(route === 'dashboard') renderDashboard();
+    if(route === 'marketplace') renderMarketplace();
+    if(route === 'stores') renderStores();
+    if(route === 'compare') renderCompare();
+    if(route === 'optimize') renderOptimizer();
+    if(route === 'reports') renderReports();
+  }
+  window.scrollTo({top:0, behavior:'instant'});
+  const collapse = document.getElementById('mainNav');
+  if(collapse.classList.contains('show')) bootstrap.Collapse.getOrCreateInstance(collapse).hide();
+}
+
+/* ---------- ANIMATED COUNTERS ---------- */
+function animateCounters(){
+  document.querySelectorAll('[data-count]').forEach(el=>{
+    const target = parseInt(el.getAttribute('data-count'),10);
+    let cur = 0; const step = Math.max(1, Math.ceil(target/40));
+    const t = setInterval(()=>{
+      cur += step;
+      if(cur >= target){cur = target; clearInterval(t);}
+      el.textContent = cur;
+    }, 25);
+  });
+}
+
+/* =========================================================================
+   CONSTRUCTION CALCULATOR — pure math functions
+   ========================================================================= */
+function calcWallArea(width, height, openingsArea){
+  return Math.max(0, (width*height) - openingsArea);
+}
+function calcWallVolume(area, thickness){
+  return area * thickness;
+}
+function calcBrickCount(area, brickL, brickH, wastePct){
+  const brickFace = brickL * brickH;
+  const raw = area / brickFace;
+  return raw * (1 + wastePct/100);
+}
+function calcCementSand(volume, cementKgPerM3, sandKgPerM3){
+  return { cement: volume*cementKgPerM3, sand: volume*sandKgPerM3 };
+}
+function calcWater(cementKg, ratio){ return cementKg*ratio; }
+function calcMortarVolume(volume, mortarFactor){ return volume*mortarFactor; }
+function calcFinishQty(area, coveragePerUnit){ return area / coveragePerUnit; }
+function fmt(n, unit){ return (Math.round(n*100)/100).toLocaleString() + (unit? ' '+unit : ''); }
+function money(n){ return '$' + (Math.round(n*100)/100).toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2}); }
+
+let lastCalc = {};
+let calcChart, calcMaterialChart, dashBudgetChart, dashMaterialChart, reportCostChart, reportTrendChart;
+
+function runConstructionCalc(){
+  const width = parseFloat(v('c_width'))||0;
+  const height = parseFloat(v('c_height'))||0;
+  const thick = parseFloat(v('c_thick'))||0;
+  const waste = parseFloat(v('c_waste'))||0;
+  const winArea = parseFloat(v('c_win'))||0;
+  const doorArea = parseFloat(v('c_door'))||0;
+  const [bl, bh, bt] = v('c_bricktype').split('|').map(Number);
+  const brickPrice = parseFloat(v('c_brickprice'))||0;
+  const cementPrice = parseFloat(v('c_cement'))||0;
+  const sandPrice = parseFloat(v('c_sand'))||0;
+  const puttyPrice = parseFloat(v('c_putty'))||0;
+  const primerPrice = parseFloat(v('c_primer'))||0;
+  const paintPrice = parseFloat(v('c_paint'))||0;
+  const waterRatio = parseFloat(v('c_waterratio'))||0;
+  const laborRate = parseFloat(v('c_labor'))||0;
+
+  const area = calcWallArea(width, height, winArea+doorArea);
+  const volume = calcWallVolume(area, thick);
+  const bricks = calcBrickCount(area, bl, bh, waste);
+  const cementSand = calcCementSand(volume, 210, 420); // kg per m3 mortar-equivalent (typical mix)
+  const water = calcWater(cementSand.cement, waterRatio);
+  const mortar = calcMortarVolume(volume, 0.28);
+  const putty = calcFinishQty(area, 3.0);   // kg per m2 coverage factor
+  const primer = calcFinishQty(area, 10);   // L per m2 coverage
+  const paint = calcFinishQty(area, 6);     // L per m2 coverage
+
+  const brickCost = bricks*brickPrice;
+  const cementCost = cementSand.cement*cementPrice;
+  const sandCost = cementSand.sand*sandPrice;
+  const puttyCost = putty*puttyPrice;
+  const primerCost = primer*primerPrice;
+  const paintCost = paint*paintPrice;
+  const laborCost = area*laborRate;
+  const materialSubtotal = brickCost+cementCost+sandCost+puttyCost+primerCost+paintCost;
+  const wasteCost = materialSubtotal*(waste/100);
+  const grandTotal = materialSubtotal + wasteCost + laborCost;
+
+  set('r_area', fmt(area,'m²'));
+  set('r_volume', fmt(volume,'m³'));
+  set('r_bricks', fmt(bricks,'pcs'));
+  set('r_cement', fmt(cementSand.cement,'kg'));
+  set('r_sand', fmt(cementSand.sand,'kg'));
+  set('r_water', fmt(water,'L'));
+  set('r_mortar', fmt(mortar,'m³'));
+  set('r_putty', fmt(putty,'kg'));
+  set('r_primer', fmt(primer,'L'));
+  set('r_paint', fmt(paint,'L'));
+  set('r_labor', money(laborCost));
+  set('r_wastecost', money(wasteCost));
+  set('r_grandtotal', money(grandTotal));
+
+  lastCalc = {area, volume, bricks, materialSubtotal, laborCost, wasteCost, grandTotal,
+    breakdown:{Brick:brickCost, Cement:cementCost, Sand:sandCost, Putty:puttyCost, Primer:primerCost, Paint:paintCost, Labor:laborCost}};
+
+  updateCalcChart();
+}
+function v(id){ return document.getElementById(id).value; }
+function set(id, val){ const el = document.getElementById(id); if(el) el.textContent = val; }
+
+function updateCalcChart(){
+  const ctx = document.getElementById('chartCalcBreakdown');
+  if(!ctx) return;
+  const data = lastCalc.breakdown || {};
+  if(calcChart) calcChart.destroy();
+  calcChart = new Chart(ctx, {
+    type:'bar',
+    data:{ labels:Object.keys(data), datasets:[{label:'Cost ($)', data:Object.values(data), backgroundColor:'#FF5A1F', borderRadius:6}] },
+    options:{ plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:cssVar('--text-dim')}, grid:{color:cssVar('--line')}}, y:{ticks:{color:cssVar('--text-dim')}, grid:{color:cssVar('--line')}} } }
+  });
+}
+function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name) || '#999'; }
+
+document.addEventListener('input', (e)=>{
+  if(e.target.classList.contains('calc-input')) runConstructionCalc();
+  if(e.target.classList.contains('reno-input')) runRenovationCalc();
+});
+document.addEventListener('change', (e)=>{
+  if(e.target.classList.contains('calc-input')) runConstructionCalc();
+  if(e.target.classList.contains('reno-input')) runRenovationCalc();
+});
+
+/* =========================================================================
+   RENOVATION CALCULATOR
+   ========================================================================= */
+const RENO_CONFIG = {
+  paint:      { unit:'L',  coverage: 10, priceLabel:'Paint price ($/L)',    extraLabel:null, needsHeight:true },
+  wallpaper:  { unit:'roll', coverage: 5, priceLabel:'Roll price ($/roll)', extraLabel:null, needsHeight:true },
+  tiles:      { unit:'m²', coverage: 1,  priceLabel:'Tile price ($/m²)',    extraLabel:null, needsHeight:false },
+  laminate:   { unit:'m²', coverage: 1,  priceLabel:'Laminate price ($/m²)',extraLabel:null, needsHeight:false },
+  ceiling:    { unit:'m²', coverage: 1,  priceLabel:'Gypsum board ($/m²)',  extraLabel:null, needsHeight:false },
+  lighting:   { unit:'fixture', coverage: 1, priceLabel:'Fixture price ($/unit)', extraLabel:'Fixture count', needsHeight:false, fixedQty:true }
+};
+let currentReno = 'paint';
+document.addEventListener('click', (e)=>{
+  if(e.target.matches('#renoTabs .chip')){
+    document.querySelectorAll('#renoTabs .chip').forEach(c=>c.classList.remove('active'));
+    e.target.classList.add('active');
+    currentReno = e.target.dataset.reno;
+    const cfg = RENO_CONFIG[currentReno];
+    document.getElementById('rn_priceLabel').textContent = cfg.priceLabel;
+    document.getElementById('rn_heightWrap').style.display = cfg.needsHeight ? '' : 'none';
+    document.getElementById('rn_extraWrap').style.display = cfg.extraLabel ? '' : 'none';
+    if(cfg.extraLabel) document.getElementById('rn_extraLabel').textContent = cfg.extraLabel;
+    runRenovationCalc();
+  }
+});
+
+function runRenovationCalc(){
+  const cfg = RENO_CONFIG[currentReno];
+  const w = parseFloat(v('rn_width'))||0;
+  const l = parseFloat(v('rn_length'))||0;
+  const h = parseFloat(v('rn_height'))||0;
+  const coats = parseFloat(v('rn_coats'))||1;
+  const price = parseFloat(v('rn_price'))||0;
+  const labor = parseFloat(v('rn_labor'))||0;
+  const waste = parseFloat(v('rn_waste'))||0;
+  const extra = parseFloat(v('rn_extra'))||0;
+
+  let area;
+  if(cfg.fixedQty){ area = extra; }
+  else if(cfg.needsHeight){ area = 2*(w+l)*h; } // wall perimeter area for paint/wallpaper
+  else { area = w*l; } // floor/ceiling area
+
+  let materialQty = cfg.fixedQty ? extra : (area/cfg.coverage)*coats;
+  materialQty = materialQty * (1+waste/100);
+  const matCost = materialQty*price;
+  const laborCost = cfg.fixedQty ? extra*labor : area*labor;
+  const wasteCost = matCost*(waste/100);
+  const extraCost = (!cfg.fixedQty && cfg.extraLabel) ? extra*price : 0;
+  const total = matCost+laborCost;
+
+  set('rn_area', fmt(area,'m²'));
+  set('rn_material', fmt(materialQty, cfg.unit));
+  set('rn_matcost', money(matCost));
+  set('rn_laborcost', money(laborCost));
+  set('rn_wastecost', money(wasteCost));
+  set('rn_extracost', extraCost? money(extraCost):'—');
+  set('rn_total', money(total));
+}
+
+/* =========================================================================
+   AI ASSISTANT — rules-based responder (single swap point for a real API)
+   ========================================================================= */
+async function askAssistant(question){
+  // ---- Swap point: replace this block with a real API call, e.g.
+  // const res = await fetch('https://api.anthropic.com/v1/messages', {...});
+  const q = question.toLowerCase();
+  const rules = [
+    { k:['brick'], a:"Clay bricks handle compressive load and thermal mass well and suit load-bearing walls. Aerated concrete blocks are lighter, faster to lay, and insulate better, which usually lowers heating costs. Pick clay for structural walls, aerated block for partition or infill walls." },
+    { k:['paint'], a:"For exteriors, choose a weatherproof acrylic or elastomeric paint rated for UV and moisture. For interiors, a washable matte or eggshell acrylic balances durability and finish. Always prime bare or patched plaster first — it roughly doubles paint longevity." },
+    { k:['reduce cost','lower cost','cheaper','save money','cut cost'], a:"Three levers usually move the budget most: switching to a locally-produced brick or block with the same load rating, buying cement and sand in bulk from a single supplier, and tightening your waste percentage with more accurate measurements. Check the Cost Optimizer page for a breakdown tailored to your last calculation." },
+    { k:['last longer','durable','durability'], a:"Fired clay brick, ceramic tile, and mineral-based paints generally outlast laminate flooring and vinyl wallpaper in humid climates. For flooring in high-traffic rooms, tile or engineered stone beats laminate on lifespan, though laminate wins on install speed and cost." },
+    { k:['wall thickness','thickness'], a:"For a single-story load-bearing exterior wall, 250mm (one full brick) is a common baseline; add insulation board if you need better thermal performance without going thicker. Interior partition walls can typically go down to 100–125mm." },
+    { k:['cement'], a:"For general masonry and plastering, ordinary Portland cement (OPC 42.5) is the standard choice. For foundations or areas exposed to moisture, consider a sulfate-resistant cement. Always match the cement grade to your structural engineer's spec if one exists." },
+    { k:['tile'], a:"Porcelain tile resists moisture and wear better than ceramic and suits kitchens, bathrooms, and high-traffic floors. Ceramic is lighter and cheaper, and works well for walls or lower-traffic rooms." },
+    { k:['budget','estimate'], a:"Head to the Construction or Renovation calculator to get a live, itemized estimate — every field updates the total instantly as you type." }
+  ];
+  await new Promise(r=>setTimeout(r, 450)); // simulate latency
+  const hit = rules.find(r=>r.k.some(k=>q.includes(k)));
+  return hit ? hit.a : "I can help with brick and material choice, paint selection, durability comparisons, wall thickness, and cost-cutting ideas. Try asking about one of those, or open the Construction Calculator for exact numbers.";
+}
+
+function appendMsg(text, who){
+  const win = document.getElementById('chatWindow');
+  const div = document.createElement('div');
+  div.className = 'msg '+who;
+  div.textContent = text;
+  win.appendChild(div);
+  win.scrollTop = win.scrollHeight;
+}
+async function sendChat(){
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if(!text) return;
+  appendMsg(text, 'user');
+  input.value = '';
+  appendMsg('…thinking', 'bot');
+  const win = document.getElementById('chatWindow');
+  const answer = await askAssistant(text);
+  win.removeChild(win.lastChild);
+  appendMsg(answer, 'bot');
+}
+function quickAsk(q){ document.getElementById('chatInput').value = q; sendChat(); }
+
+/* =========================================================================
+   AI WALL ANALYZER (simulated)
+   ========================================================================= */
+function handleUpload(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const url = URL.createObjectURL(file);
+  document.getElementById('preview').innerHTML = `<img src="${url}" class="w-100 rounded-3 tick-frame" style="max-height:300px;object-fit:cover;">`;
+  const results = document.getElementById('analyzerResults');
+  results.innerHTML = `<div class="glass p-4"><div class="skeleton" style="height:14px;width:60%;border-radius:6px;margin-bottom:.6rem;"></div><div class="skeleton" style="height:14px;width:40%;border-radius:6px;"></div></div>`;
+  setTimeout(()=>renderAnalysis(results), 1100);
+}
+function renderAnalysis(container){
+  const defects = [
+    {name:'Hairline cracks', sev:'Moderate', fix:'Fill with elastic crack filler, re-skim with putty', cost: 45},
+    {name:'Surface humidity', sev:'Low', fix:'Apply damp-proof primer before repainting', cost: 30},
+    {name:'Paint flaking', sev:'Moderate', fix:'Scrape, sand, prime, repaint 2 coats', cost: 60},
+  ];
+  const total = defects.reduce((s,d)=>s+d.cost,0);
+  container.innerHTML = `
+    <div class="glass p-4 mb-3">
+      <h6 class="fw-bold mb-3"><i class="bi bi-clipboard2-pulse me-1 text-orange"></i>Simulated defect report</h6>
+      ${defects.map(d=>`
+        <div class="d-flex justify-content-between align-items-center py-2" style="border-bottom:1px dashed var(--border);">
+          <div><div class="fw-bold small">${d.name}</div><div class="text-dim small">${d.fix}</div></div>
+          <div class="text-end"><span class="badge-cat">${d.sev}</span><div class="mono small mt-1">${money(d.cost)}</div></div>
+        </div>`).join('')}
+      <div class="d-flex justify-content-between pt-3 fw-bold">
+        <span>Estimated repair cost</span><span class="text-orange">${money(total)}</span>
+      </div>
+    </div>
+    <div class="glass p-4">
+      <h6 class="fw-bold mb-3"><i class="bi bi-stars me-1 text-orange"></i>Suggested finish styles</h6>
+      <div class="row g-2" id="styleRow"></div>
+    </div>`;
+  const styles = [
+    {name:'Minimal', img:'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=400&auto=format&fit=crop'},
+    {name:'Scandinavian', img:'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=400&auto=format&fit=crop'},
+    {name:'Luxury', img:'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=400&auto=format&fit=crop'},
+    {name:'Loft', img:'https://images.unsplash.com/photo-1585128993280-9456c19c0eb4?q=80&w=400&auto=format&fit=crop'},
+    {name:'Classic', img:'https://images.unsplash.com/photo-1600210492493-0946911123ea?q=80&w=400&auto=format&fit=crop'}
+  ];
+  const row = document.getElementById('styleRow');
+  row.innerHTML = styles.map((s,i)=>`
+    <div class="col-4 col-md-2-4" style="flex:0 0 20%;max-width:20%;">
+      <div class="style-swatch ${i===0?'active':''}" onclick="selectStyle(this)">
+        <img src="${s.img}" alt="${s.name}">
+      </div>
+      <div class="text-center small mt-1 text-dim">${s.name}</div>
+    </div>`).join('');
+}
+function selectStyle(el){
+  el.closest('#styleRow').querySelectorAll('.style-swatch').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+}
+
+/* =========================================================================
+   MARKETPLACE
+   ========================================================================= */
+const PRODUCTS = [
+  {id:1, name:'Standard Clay Brick', brand:'BrickWorks Uz', cat:'Bricks', price:0.18, rating:4.5, img:'https://images.unsplash.com/photo-1590247813693-5541d1c609fd?q=80&w=500&auto=format&fit=crop', desc:'250×120×65mm fired clay brick for load-bearing masonry.', avail:true},
+  {id:2, name:'Aerated Concrete Block', brand:'AeroBlok', cat:'Bricks', price:1.35, rating:4.7, img:'https://images.unsplash.com/photo-1601058268499-e52658b8bb88?q=80&w=500&auto=format&fit=crop', desc:'Lightweight thermal block, faster to lay, better insulation.', avail:true},
+  {id:3, name:'Portland Cement 42.5', brand:'UzCement', cat:'Cement', price:0.12, rating:4.6, img:'https://images.unsplash.com/photo-1600585152220-90363fe7e115?q=80&w=500&auto=format&fit=crop', desc:'General purpose OPC for masonry, plaster and concrete.', avail:true},
+  {id:4, name:'River Sand (washed)', brand:'Local Supply', cat:'Sand', price:0.03, rating:4.2, img:'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=500&auto=format&fit=crop', desc:'Fine washed sand for mortar and plaster mixes.', avail:true},
+  {id:5, name:'Rebar Steel 12mm', brand:'SteelTash', cat:'Steel', price:0.95, rating:4.4, img:'https://images.unsplash.com/photo-1518709268805-4e9042af2176?q=80&w=500&auto=format&fit=crop', desc:'Ribbed reinforcement bar for concrete structures.', avail:true},
+  {id:6, name:'Ready-Mix Concrete B25', brand:'MixPro', cat:'Concrete', price:62, rating:4.3, img:'https://images.unsplash.com/photo-1620641622503-4f5cbe1f9d6c?q=80&w=500&auto=format&fit=crop', desc:'Delivered ready-mix, per m³, for foundations and slabs.', avail:false},
+  {id:7, name:'Finishing Putty', brand:'SmoothCoat', cat:'Putty', price:0.35, rating:4.5, img:'https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?q=80&w=500&auto=format&fit=crop', desc:'Fine finish putty for a paint-ready wall surface.', avail:true},
+  {id:8, name:'Deep Penetrating Primer', brand:'PrimeGuard', cat:'Primer', price:1.6, rating:4.4, img:'https://images.unsplash.com/photo-1562259949-e8e7689d7828?q=80&w=500&auto=format&fit=crop', desc:'Bonding primer that seals porous plaster before painting.', avail:true},
+  {id:9, name:'Washable Interior Paint', brand:'ColorMax', cat:'Paint', price:3.2, rating:4.6, img:'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?q=80&w=500&auto=format&fit=crop', desc:'Matte, scrubbable acrylic emulsion, low VOC.', avail:true},
+  {id:10, name:'Vinyl Wallpaper Roll', brand:'WallCraft', cat:'Wallpaper', price:12, rating:4.1, img:'https://images.unsplash.com/photo-1615529182904-14819c35db37?q=80&w=500&auto=format&fit=crop', desc:'Textured vinyl roll, 10m, washable surface.', avail:true},
+  {id:11, name:'Oak-Finish Laminate', brand:'FloorTech', cat:'Laminate', price:9.5, rating:4.5, img:'https://images.unsplash.com/photo-1622372738946-62e02505feb3?q=80&w=500&auto=format&fit=crop', desc:'AC4-rated laminate plank, per m², click-lock install.', avail:true},
+  {id:12, name:'Porcelain Floor Tile', brand:'CeramTash', cat:'Tiles', price:11, rating:4.6, img:'https://images.unsplash.com/photo-1600566752355-35792bedcfea?q=80&w=500&auto=format&fit=crop', desc:'600×600mm matte porcelain, low water absorption.', avail:true},
+  {id:13, name:'Galvanized Roof Sheet', brand:'RoofPro', cat:'Roof materials', price:7.8, rating:4.3, img:'https://images.unsplash.com/photo-1632759145351-1d592919f522?q=80&w=500&auto=format&fit=crop', desc:'Corrugated galvanized sheet, per m², corrosion-resistant.', avail:true},
+  {id:14, name:'PVC Pipe Set (100mm)', brand:'AquaFlow', cat:'Plumbing', price:4.4, rating:4.2, img:'https://images.unsplash.com/photo-1584622781867-1c5cbfa2b8c6?q=80&w=500&auto=format&fit=crop', desc:'Drain-rated PVC pipe, 3m length with fittings.', avail:true},
+  {id:15, name:'Copper Electrical Cable', brand:'VoltLine', cat:'Electrical supplies', price:0.85, rating:4.5, img:'https://images.unsplash.com/photo-1621905252472-e52a5f6a1a97?q=80&w=500&auto=format&fit=crop', desc:'2.5mm² copper cable, per meter, PVC insulated.', avail:true},
+  {id:16, name:'Decorative Wall Panel', brand:'FormLine', cat:'Decorative products', price:22, rating:4.4, img:'https://images.unsplash.com/photo-1594026112284-02bb6f3352fe?q=80&w=500&auto=format&fit=crop', desc:'3D textured MDF panel, per m², paintable finish.', avail:true},
+];
+let favorites = JSON.parse(localStorage.getItem('ba_favs')||'[]');
+let compareList = JSON.parse(localStorage.getItem('ba_compare')||'[]');
+
+function renderMarketplace(){
+  const grid = document.getElementById('marketGrid');
+  const search = (document.getElementById('marketSearch').value||'').toLowerCase();
+  const filterSel = document.getElementById('marketFilter');
+  if(filterSel.options.length<=1){
+    [...new Set(PRODUCTS.map(p=>p.cat))].forEach(c=>{
+      const o = document.createElement('option'); o.value=c; o.textContent=c; filterSel.appendChild(o);
+    });
+  }
+  const cat = filterSel.value;
+  const list = PRODUCTS.filter(p=> (cat==='all'||p.cat===cat) && (p.name.toLowerCase().includes(search)||p.brand.toLowerCase().includes(search)));
+  grid.innerHTML = list.map(p=>`
+    <div class="col-sm-6 col-lg-3">
+      <div class="product-card" data-aos="fade-up">
+        <div class="position-relative">
+          <img src="${p.img}" alt="${p.name}">
+          <button class="fav-btn ${favorites.includes(p.id)?'active':''}" onclick="toggleFav(${p.id})"><i class="bi ${favorites.includes(p.id)?'bi-heart-fill':'bi-heart'}"></i></button>
+        </div>
+        <div class="body">
+          <span class="badge-cat">${p.cat}</span>
+          <h6 class="fw-bold mt-2 mb-0">${p.name}</h6>
+          <div class="text-dim small mb-1">${p.brand}</div>
+          <div class="rating mb-2">${'<i class="bi bi-star-fill"></i>'.repeat(Math.round(p.rating))}<span class="text-dim small ms-1">${p.rating}</span></div>
+          <p class="text-dim small" style="min-height:38px;">${p.desc}</p>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fw-bold mono">${money(p.price)}</span>
+            <span class="small ${p.avail?'text-success':'text-dim'}">${p.avail?'In stock':'Out of stock'}</span>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-ba btn-sm flex-fill" onclick="toggleCompare(${p.id})">${compareList.includes(p.id)?'Added ✓':'Compare'}</button>
+            <button class="btn btn-orange btn-sm flex-fill" ${p.avail?'':'disabled'} onclick="notify('Added ${p.name.replace(/'/g,"")} to cart')">Buy</button>
+          </div>
+        </div>
+      </div>
+    </div>`).join('') || `<div class="col-12 text-center text-dim py-5">No products match your search.</div>`;
+}
+function toggleFav(id){
+  favorites = favorites.includes(id) ? favorites.filter(x=>x!==id) : [...favorites, id];
+  localStorage.setItem('ba_favs', JSON.stringify(favorites));
+  renderMarketplace();
+}
+function toggleCompare(id){
+  if(compareList.includes(id)){ compareList = compareList.filter(x=>x!==id); }
+  else { if(compareList.length>=4){ notify('Compare up to 4 items at a time'); return; } compareList = [...compareList, id]; }
+  localStorage.setItem('ba_compare', JSON.stringify(compareList));
+  renderMarketplace();
+}
+
+/* =========================================================================
+   COMPARE
+   ========================================================================= */
+function renderCompare(){
+  const items = PRODUCTS.filter(p=>compareList.includes(p.id));
+  const empty = document.getElementById('compareEmpty');
+  const wrap = document.getElementById('compareTableWrap');
+  if(items.length===0){ empty.style.display='block'; wrap.style.display='none'; return; }
+  empty.style.display='none'; wrap.style.display='block';
+  document.getElementById('compareTableBody').innerHTML = items.map(p=>{
+    const quality = Math.round(p.rating*18);
+    const durability = 60+Math.round(p.price%20);
+    const warranty = ['1 yr','2 yr','5 yr','No warranty'][p.id%4];
+    const popularity = 50+Math.round((p.rating*10)%45);
+    const costEff = Math.max(20, 100-Math.round(p.price*3));
+    return `<tr>
+      <td class="fw-bold">${p.name}<div class="text-dim small">${p.brand}</div></td>
+      <td class="mono">${money(p.price)}</td>
+      <td>${bar(quality)}</td>
+      <td>${bar(durability)}</td>
+      <td>${warranty}</td>
+      <td>${p.rating} <i class="bi bi-star-fill text-warning"></i></td>
+      <td>${bar(popularity)}</td>
+      <td>${bar(costEff)}</td>
+      <td><button class="btn btn-sm btn-outline-ba" onclick="toggleCompare(${p.id});renderCompare();">Remove</button></td>
+    </tr>`;
+  }).join('');
+}
+function bar(pct){ return `<div class="progress progress-thin" style="width:80px;"><div class="progress-bar" style="width:${pct}%"></div></div>`; }
+
+/* =========================================================================
+   STORES
+   ========================================================================= */
+const STORES = [
+  {name:'Home Spot', area:'Yangi Sergeli, Tashkent', addr:'Yangi Sergeli St. 53/1', phone:'+998 71 200 00 00', hours:'9:00–20:00 daily', delivery:true, rating:4.0, logo:'https://images.unsplash.com/photo-1541976590-713941681591?q=80&w=200&auto=format&fit=crop', cover:'https://images.unsplash.com/photo-1601058268499-e52658b8bb88?q=80&w=600&auto=format&fit=crop'},
+  {name:'Global Stroy', area:'Mirzo Ulugbek, Tashkent', addr:'Katta Darkhan St. 15', phone:'+998 71 200 00 01', hours:'8:30–19:00 daily', delivery:true, rating:5.0, logo:'https://images.unsplash.com/photo-1516156008625-3a9d6067fab5?q=80&w=200&auto=format&fit=crop', cover:'https://images.unsplash.com/photo-1590496793929-36417d3117de?q=80&w=600&auto=format&fit=crop'},
+  {name:'STROY market', area:'Buyuk Turon, Tashkent', addr:'Buyuk Turon St. 75', phone:'+998 71 200 00 02', hours:'9:00–19:00, closed Sun', delivery:false, rating:4.2, logo:'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=80&w=200&auto=format&fit=crop', cover:'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=600&auto=format&fit=crop'},
+  {name:'NGM Story Center', area:'Sebzar, central Tashkent', addr:'Sebzar St. 7', phone:'+998 71 200 00 03', hours:'9:00–20:00 daily', delivery:true, rating:4.5, logo:'https://images.unsplash.com/photo-1568605114967-8130f3a36994?q=80&w=200&auto=format&fit=crop', cover:'https://images.unsplash.com/photo-1489514354504-1653aa90e34e?q=80&w=600&auto=format&fit=crop'},
+  {name:'Vera Knauf Market', area:'Yunusabad 18, Tashkent', addr:'Yunusabad District, Block 18, Bldg 42B', phone:'+998 71 200 00 04', hours:'9:00–18:30, closed Sun', delivery:true, rating:4.3, logo:'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=200&auto=format&fit=crop', cover:'https://images.unsplash.com/photo-1587582140277-4e26414a5a67?q=80&w=600&auto=format&fit=crop'},
+];
+function renderStores(){
+  document.getElementById('storeGrid').innerHTML = STORES.map(s=>`
+    <div class="col-md-6 col-lg-4">
+      <div class="glass overflow-hidden" data-aos="fade-up">
+        <img src="${s.cover}" class="store-cover" alt="${s.name}">
+        <div class="p-3">
+          <img src="${s.logo}" class="store-logo shadow" alt="${s.name} logo">
+          <h6 class="fw-bold mt-2 mb-0">${s.name}</h6>
+          <div class="text-dim small mb-2">${s.area}</div>
+          <div class="small mb-1"><i class="bi bi-geo-alt me-1 text-orange"></i>${s.addr}</div>
+          <div class="small mb-1"><i class="bi bi-telephone me-1 text-orange"></i>${s.phone}</div>
+          <div class="small mb-1"><i class="bi bi-clock me-1 text-orange"></i>${s.hours}</div>
+          <div class="small mb-2"><i class="bi bi-truck me-1 text-orange"></i>${s.delivery?'Delivery available':'Pickup only'}</div>
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="rating">${'<i class="bi bi-star-fill"></i>'.repeat(Math.round(s.rating))} <span class="text-dim small">${s.rating}</span></span>
+            <button class="btn btn-outline-ba btn-sm" onclick="notify('Opening map for ${s.name.replace(/'/g,"")}')"><i class="bi bi-map me-1"></i>Map</button>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+/* =========================================================================
+   COST OPTIMIZER
+   ========================================================================= */
+function renderOptimizer(){
+  const grid = document.getElementById('optimizeGrid');
+  const hasCalc = lastCalc.grandTotal > 0;
+  const base = hasCalc ? lastCalc.materialSubtotal : 900;
+  const ideas = [
+    {title:'Switch to aerated block', desc:'Same load class for partition walls, ~30% lighter, faster labor.', save: base*0.11, tag:'Budget-friendly'},
+    {title:'Bulk cement + sand order', desc:'Single supplier, one delivery, volume discount above 500kg.', save: base*0.06, tag:'Best value'},
+    {title:'Locally-made ceramic tile', desc:'Comparable durability to imported porcelain at lower cost.', save: base*0.09, tag:'Budget-friendly'},
+    {title:'Premium acrylic exterior paint', desc:'Higher upfront cost, ~2x repaint interval — lower lifetime cost.', save: -base*0.05, tag:'Premium'},
+  ];
+  grid.innerHTML = ideas.map(i=>`
+    <div class="col-md-6">
+      <div class="glass p-4 h-100">
+        <span class="badge-cat mb-2 d-inline-block">${i.tag}</span>
+        <h6 class="fw-bold">${i.title}</h6>
+        <p class="text-dim small">${i.desc}</p>
+        <div class="fw-bold ${i.save>=0?'text-success':'text-orange'}">${i.save>=0?'Save ':'Adds '}${money(Math.abs(i.save))}</div>
+      </div>
+    </div>`).join('') + `<div class="col-12"><p class="text-dim small mt-2">${hasCalc? 'Based on your last construction calculation.' : 'Run the construction calculator for numbers based on your own project.'}</p></div>`;
+}
+
+/* =========================================================================
+   DASHBOARD / SAVED PROJECTS / REPORTS
+   ========================================================================= */
+let savedProjects = JSON.parse(localStorage.getItem('ba_projects')||'[]');
+if(savedProjects.length===0){
+  savedProjects = [
+    {name:'Guest House — Exterior Wall', type:'Construction', area:'28.5 m²', budget: 1842, status:'Planning'},
+    {name:'Living Room Repaint', type:'Renovation', area:'20 m²', budget: 210, status:'In progress'},
+    {name:'Kitchen Tiling', type:'Renovation', area:'14 m²', budget: 380, status:'Completed'},
+  ];
+}
+function saveProject(type){
+  const total = type==='Construction' ? (lastCalc.grandTotal||0) : parseFloat((document.getElementById('rn_total').textContent||'$0').replace(/[^0-9.]/g,''))||0;
+  const area = type==='Construction' ? (document.getElementById('r_area').textContent) : (document.getElementById('rn_area').textContent);
+  savedProjects.unshift({name:type+' project '+(savedProjects.length+1), type, area, budget: total, status:'Planning'});
+  localStorage.setItem('ba_projects', JSON.stringify(savedProjects));
+  notify('Project saved to dashboard');
+}
+function renderDashboard(){
+  document.getElementById('kpiProjects').textContent = savedProjects.length;
+  document.getElementById('kpiFavs').textContent = favorites.length;
+  const totalBudget = savedProjects.reduce((s,p)=>s+(parseFloat(p.budget)||0),0);
+  document.getElementById('kpiBudget').textContent = money(totalBudget);
+  document.getElementById('projectsTable').innerHTML = savedProjects.map(p=>`
+    <tr>
+      <td class="fw-bold">${p.name}</td>
+      <td><span class="badge-cat">${p.type}</span></td>
+      <td class="mono">${p.area}</td>
+      <td class="mono">${money(parseFloat(p.budget)||0)}</td>
+      <td><span class="small ${p.status==='Completed'?'text-success':'text-dim'}">${p.status}</span></td>
+    </tr>`).join('');
+
+  const ctxB = document.getElementById('chartBudget');
+  const bd = lastCalc.breakdown || {Brick:420,Cement:210,Sand:80,Putty:60,Primer:70,Paint:180,Labor:300};
+  if(dashBudgetChart) dashBudgetChart.destroy();
+  dashBudgetChart = new Chart(ctxB, {type:'doughnut', data:{labels:Object.keys(bd), datasets:[{data:Object.values(bd), backgroundColor:['#FF5A1F','#4C7FB0','#9A9C97','#2F9E5B','#c94513','#7aa8d1','#e0a63a']}]}, options:{plugins:{legend:{position:'bottom', labels:{color:cssVar('--text-dim'), boxWidth:10, font:{size:10}}}}}});
+
+  const ctxM = document.getElementById('chartMaterial');
+  if(dashMaterialChart) dashMaterialChart.destroy();
+  dashMaterialChart = new Chart(ctxM, {type:'bar', data:{labels:['Brick','Cement','Sand','Putty'], datasets:[{data:[lastCalc.bricks? lastCalc.bricks/50:60, 30,55,15], backgroundColor:'#4C7FB0', borderRadius:6}]}, options:{indexAxis:'y', plugins:{legend:{display:false}}, scales:{x:{ticks:{color:cssVar('--text-dim')},grid:{color:cssVar('--line')}}, y:{ticks:{color:cssVar('--text-dim')},grid:{display:false}}}}});
+}
+
+function renderReports(){
+  const bd = lastCalc.breakdown || {Brick:420,Cement:210,Sand:80,Putty:60,Primer:70,Paint:180,Labor:300};
+  const ctxC = document.getElementById('chartReportCost');
+  if(reportCostChart) reportCostChart.destroy();
+  reportCostChart = new Chart(ctxC, {type:'pie', data:{labels:Object.keys(bd), datasets:[{data:Object.values(bd), backgroundColor:['#FF5A1F','#4C7FB0','#9A9C97','#2F9E5B','#c94513','#7aa8d1','#e0a63a']}]}, options:{plugins:{legend:{position:'bottom', labels:{color:cssVar('--text-dim'), boxWidth:10, font:{size:10}}}}}});
+
+  const ctxT = document.getElementById('chartReportTrend');
+  if(reportTrendChart) reportTrendChart.destroy();
+  reportTrendChart = new Chart(ctxT, {type:'line', data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul'], datasets:[{label:'Cement price index', data:[100,102,101,105,108,107,110], borderColor:'#FF5A1F', tension:.35, fill:false}]}, options:{plugins:{legend:{labels:{color:cssVar('--text-dim')}}}, scales:{x:{ticks:{color:cssVar('--text-dim')},grid:{color:cssVar('--line')}}, y:{ticks:{color:cssVar('--text-dim')},grid:{color:cssVar('--line')}}}}});
+
+  const summary = document.getElementById('reportSummary');
+  if(lastCalc.grandTotal){
+    summary.innerHTML = `Wall area <b>${fmt(lastCalc.area,'m²')}</b> requires <b>${fmt(lastCalc.bricks,'bricks')}</b> at a material subtotal of <b>${money(lastCalc.materialSubtotal)}</b>, plus labor of <b>${money(lastCalc.laborCost)}</b> and waste allowance of <b>${money(lastCalc.wasteCost)}</b>, for a grand total of <b class="text-orange">${money(lastCalc.grandTotal)}</b>.`;
+  }
+}
+
+function printReport(kind){ notify('Report ready — opening print view'); setTimeout(()=>window.print(), 400); }
+function shareReport(kind){
+  const text = kind==='construction' && lastCalc.grandTotal
+    ? `BuildAI estimate — Area ${fmt(lastCalc.area,'m²')}, Total ${money(lastCalc.grandTotal)}`
+    : 'BuildAI project estimate';
+  if(navigator.clipboard) navigator.clipboard.writeText(text);
+  notify('Summary copied to clipboard');
+}
+
+/* =========================================================================
+   NOTIFICATIONS
+   ========================================================================= */
+function notify(msg){
+  const panel = document.getElementById('notifPanel');
+  panel.style.display = 'block';
+  const item = document.createElement('div');
+  item.className = 'notif-item';
+  item.innerHTML = `<div class="d-flex justify-content-between"><span class="small">${msg}</span><i class="bi bi-x" style="cursor:pointer" onclick="this.closest('.notif-item').remove()"></i></div>`;
+  panel.appendChild(item);
+  setTimeout(()=>{ item.remove(); }, 4000);
+}
+function toggleNotif(){ notify('You have no new alerts — everything is up to date.'); }
+
+/* =========================================================================
+   SCROLL EFFECTS
+   ========================================================================= */
+window.addEventListener('scroll', ()=>{
+  const btn = document.getElementById('backToTop');
+  if(window.scrollY > 400) btn.classList.add('show'); else btn.classList.remove('show');
+});
+
+function refreshCharts(){
+  if(document.getElementById('page-dashboard').classList.contains('active')) renderDashboard();
+  if(document.getElementById('page-calculator').classList.contains('active')) updateCalcChart();
+  if(document.getElementById('page-reports').classList.contains('active')) renderReports();
+}
+
+/* ---------- INIT ---------- */
+document.addEventListener('DOMContentLoaded', ()=>{
+  AOS.init({ once:true, duration:600, easing:'ease-out' });
+  animateCounters();
+  runConstructionCalc();
+  runRenovationCalc();
+});
+</script>
+</body>
+</html>
